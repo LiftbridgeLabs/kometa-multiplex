@@ -1,0 +1,3 @@
+# Only check_paths.py needs an external dependency — everything else
+# (aura-to-kometa.py, render-aura-configs.py) uses only the Python stdlib.
+PyYAML==6.0.2

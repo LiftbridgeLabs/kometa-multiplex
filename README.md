@@ -48,6 +48,7 @@ to clean up the image bloat that art churn leaves behind.
 | `aura-to-kometa.py` | The exporter: AURA.db → Kometa metadata files (TMDb→TVDb fallback for shows whose paths lack `{tvdb-NNN}`) |
 | `render-aura-configs.py` | Fills the AURA templates from `.env` (AURA can't read env vars itself) |
 | `check_paths.py` | Static preflight: verifies every path in config.yml resolves before you ever run Kometa |
+| `requirements.txt` | The one external Python dependency (PyYAML, for check_paths.py) — everything else is stdlib |
 | `.env.example` | Every secret the stack needs, in one gitignored file |
 | `overlays/movies/cam.yml`, `overlays/tv/series_status.yml` | The custom overlay definitions `config.example.yml` wires up |
 | `overlays/images/` | The art those overlays and the network-logo default need — bundled so it works out of the box, not assumed to already be on your machine |
