@@ -1,0 +1,159 @@
+##############################################################################
+# kometa-multiplex example config — ONE Kometa instance, MANY Plex servers.
+# Copy to config.yml and edit. See README.md for the full architecture.
+#
+# The pattern: YAML anchors (&name / *name) define each library "shape" once,
+# then every library on every server reuses them. Secrets are <<placeholders>>
+# filled from KOMETA_* env vars (see kometa-compose.yml + .env.example).
+#
+#   Server A ("main")  = the one AURA curates — set as the GLOBAL plex block
+#   Server B, C, ...   = per-library `plex:` overrides via anchors
+#
+# Mapping names (Main_Movies etc.) are yours to choose and must be unique;
+# library_name must match the library's real name in that Plex server.
+##############################################################################
+
+libraries:
+
+  ########################## Server A (main) ##########################
+
+  Main_Movies:
+    library_name: Movies
+    report_path: /config/logs/main-movies.yml
+    settings: &movie_settings
+      missing_only_released: true
+      only_filter_missing: true
+    operations: &asset_ops
+      assets_for_all: true
+    metadata_files: &movie_metadata
+      # Manual pins for titles NOT on the main server (AURA can't curate what
+      # it can't see) — listed first so the auto file below wins conflicts.
+      # - file: /config/metadata/mediux-manual-movies.yml
+      # Auto-generated nightly from AURA.db by aura-to-kometa.py:
+      - file: /config/metadata/mediux-auto-movies.yml
+    overlay_files: &movie_overlays
+      # Quality warning banner for CAM/TELESYNC releases — see overlays/movies/cam.yml
+      - file: /config/overlays/movies/cam.yml
+      # MediaStinger: flags movies with a credits / post-credits scene
+      - default: mediastinger
+        template_variables:
+          file: /config/overlays/images/post_credit_scene.png
+          vertical_align: bottom
+          vertical_offset: 0
+          horizontal_align: right
+          horizontal_offset: 0
+          back_width: 1000
+          back_height: 1500
+          back_color: 00000000
+
+  Main_TV:
+    library_name: TV Shows
+    report_path: /config/logs/main-tv.yml
+    operations: *asset_ops
+    metadata_files: &tv_metadata
+      # Auto-generated nightly — show/season/titlecard art
+      - file: /config/metadata/mediux-auto-tv.yml
+    overlay_files: &tv_overlays
+      # Airing / Returning / Ended / Canceled + New Season / Recently Added — see overlays/tv/series_status.yml
+      - file: /config/overlays/tv/series_status.yml
+      # Network logo, top-left, using the bundled logo set (~300 networks/streamers)
+      - default: network
+        template_variables:
+          horizontal_align: left
+          horizontal_offset: 0
+          vertical_align: top
+          vertical_offset: 0
+          back_width: 1000
+          back_height: 1500
+          file_#0: /config/overlays/images/network-top-left/#0.png
+          file: /config/overlays/images/network-top-left/<<key>>.png
+          back_color: 00
+
+  ########################## Server B ##########################
+  # Every library that names this anchor talks to server B instead.
+
+  ServerB_Movies:
+    library_name: Movies
+    plex: &plex_server_b
+      url: http://192.168.1.20:32400
+      token: <<pmstoken>>
+    report_path: /config/logs/serverb-movies.yml
+    settings: *movie_settings
+    operations: *asset_ops
+    metadata_files: *movie_metadata
+    overlay_files: *movie_overlays
+
+  ServerB_TV:
+    library_name: TV Shows
+    plex: *plex_server_b
+    report_path: /config/logs/serverb-tv.yml
+    operations: *asset_ops
+    metadata_files: *tv_metadata
+    overlay_files: *tv_overlays
+
+  # Add Server C by copying the Server B pattern with a new anchor.
+
+##############################################################################
+settings:
+  run_order:
+    - operations
+    - metadata      # art lands first...
+    - overlays      # ...overlays go on top of it
+    - collections
+
+  cache: true
+  cache_expiration: 60
+
+  asset_directory:
+    - /config/assets
+  asset_folders: true
+  create_asset_folders: false   # art comes from AURA/MediUX, not local files
+  prioritize_assets: true
+
+  sync_mode: append
+  minimum_items: 2
+  delete_below_minimum: true
+
+  overlay_artwork_filetype: webp_lossy
+  overlay_artwork_quality: 90
+
+  save_report: true
+  show_unconfigured: true
+  show_missing: false
+
+##############################################################################
+# Connections — global plex = Server A (libraries without a plex block use it)
+##############################################################################
+
+plex:
+  url: http://192.168.1.10:32400
+  token: <<pmstoken>>
+  timeout: 360
+  clean_bundles: false    # ImageMaid handles cleanup on its own schedule
+  empty_trash: false
+  optimize: false
+
+tmdb:
+  apikey: <<tmdbkey>>
+  cache_expiration: 60
+  language: en
+
+# Optional — uncomment what you use (and its KOMETA_* line in the compose):
+# webhooks:
+#   error: <<discordhook>>
+#   run_start: <<discordhook>>
+#   run_end: <<discordhook>>
+# radarr:
+#   url: http://192.168.1.10:7878
+#   token: <<radarrkey>>
+# sonarr:
+#   url: http://192.168.1.10:8989
+#   token: <<sonarrkey>>
+# trakt:
+#   client_id: <<traktid>>
+#   client_secret: <<traktsecret>>
+#   authorization:
+#     access_token: <<traktaccess>>
+#     token_type: Bearer
+#     refresh_token: <<traktrefresh>>
+#     scope: public

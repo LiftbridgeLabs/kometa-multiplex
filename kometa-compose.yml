@@ -1,0 +1,75 @@
+# Kometa stack: Kometa + the nightly AURA exporter + one ImageMaid per
+# LOCAL Plex server. Put a filled-in .env next to this file (see .env.example)
+# — compose loads it automatically.
+#
+# EDIT-ME markers: volume paths and PLEX_URLs below are examples.
+#
+# ImageMaid note: it needs the Plex *data directory* mounted, so each instance
+# must run on the machine that hosts that Plex server. For remote servers,
+# run a copy of the imagemaid service on that box with its own .env.
+
+services:
+
+  kometa:
+    image: kometateam/kometa:latest
+    container_name: kometa
+    restart: unless-stopped
+    volumes:
+      - /path/to/this/folder:/config                 # EDIT-ME
+    environment:
+      - KOMETA_CONFIG=/config/config.yml
+      - KOMETA_TIME=06:00
+      - KOMETA_RUN=false
+      - PUID=1000                                     # EDIT-ME (99/100 on Unraid)
+      - PGID=1000
+      - UMASK=002
+      - TZ=Etc/UTC                                    # EDIT-ME
+      # --- Config Secrets (fill <<name>> placeholders in config.yml) ---
+      # (names must not contain underscores or the word PLEX — Kometa quirks)
+      - KOMETA_PMSTOKEN=${PLEX_TOKEN}
+      - KOMETA_TMDBKEY=${TMDB_APIKEY}
+      # - KOMETA_DISCORDHOOK=${DISCORD_WEBHOOK}
+      # - KOMETA_RADARRKEY=${RADARR_TOKEN}
+      # - KOMETA_SONARRKEY=${SONARR_TOKEN}
+      # - KOMETA_TRAKTID=${TRAKT_CLIENT_ID}
+      # - KOMETA_TRAKTSECRET=${TRAKT_CLIENT_SECRET}
+      # - KOMETA_TRAKTACCESS=${TRAKT_ACCESS_TOKEN}
+      # - KOMETA_TRAKTREFRESH=${TRAKT_REFRESH_TOKEN}
+
+  # Exports AURA's saved MediUX sets into Kometa metadata files daily at
+  # 05:30 — right before Kometa's 06:00 run — so art curated once in AURA
+  # reaches every library on every server. Also runs once at startup.
+  aura-kometa-sync:
+    image: python:3.12-alpine
+    container_name: aura-kometa-sync
+    restart: unless-stopped
+    volumes:
+      - /path/to/aura/appdata:/aura:ro               # EDIT-ME (folder holding AURA.db)
+      - /path/to/this/folder:/config                 # EDIT-ME (same as kometa's)
+    environment:
+      - TZ=Etc/UTC                                    # EDIT-ME — must match kometa's
+      - TMDB_APIKEY=${TMDB_APIKEY}
+    command: >
+      sh -c "echo '30 5 * * * python /config/aura-to-kometa.py --db /aura/AURA.db --out /config/metadata' | crontab - &&
+             python /config/aura-to-kometa.py --db /aura/AURA.db --out /config/metadata &&
+             crond -f -l 2"
+
+  # One ImageMaid per Plex server on THIS machine. Stagger schedules so they
+  # never overlap each other or Kometa's 06:00 run.
+  imagemaid-main:
+    image: kometateam/imagemaid:latest
+    container_name: imagemaid-main
+    restart: unless-stopped
+    volumes:
+      - /path/to/imagemaid/config/main:/config       # EDIT-ME
+      - "/path/to/plex/appdata/Plex Media Server:/plex"   # EDIT-ME (dir containing Metadata/)
+    environment:
+      - TZ=Etc/UTC                                    # EDIT-ME
+      - PLEX_URL=http://192.168.1.10:32400            # EDIT-ME
+      - PLEX_TOKEN=${PLEX_TOKEN}
+      - MODE=remove
+      - USE_EXISTING=true
+      - CLEAN_BUNDLES=true
+      - OPTIMIZE_DB=true
+      - SCHEDULE=09:00|weekly(sunday)
+      - TIMEOUT=600

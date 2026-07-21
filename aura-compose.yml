@@ -1,0 +1,24 @@
+# AURA — the ONE curation instance, pointed at your main Plex server.
+# With the aura-kometa-sync exporter (kometa-compose.yml), one AURA is enough:
+# sets saved here are exported nightly and Kometa applies the art everywhere
+# by TMDb/TVDb id.
+#
+# Deploy the rendered aura-configs/main-server/config.yaml into the appdata
+# folder below (run `python render-aura-configs.py` after filling in .env).
+
+services:
+
+  aura:
+    image: ghcr.io/mediux-team/aura:latest
+    container_name: aura
+    restart: unless-stopped
+    ports:
+      - "3000:3000"      # web UI          EDIT-ME if 3000 is taken
+      - "8888:8888"      # API (webhooks)  EDIT-ME if 8888 is taken
+    volumes:
+      - /path/to/aura/appdata:/config                # EDIT-ME (config.yaml + AURA.db live here)
+      - /path/to/your/media:/path/to/your/media      # EDIT-ME (same path Plex sees)
+    environment:
+      - PUID=1000                                     # EDIT-ME
+      - PGID=1000
+      - UMASK=002

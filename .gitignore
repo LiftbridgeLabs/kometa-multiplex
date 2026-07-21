@@ -1,0 +1,16 @@
+# Secrets — only .env.example and *.template files are committed
+.env
+aura-configs/*/config.yaml
+
+# Kometa runtime state (only exists on a deployed copy)
+config.cache
+logs/
+*_report.yml
+UUID
+metadata/.tvdb-map.json
+
+# Kometa-managed poster backups — runtime state, can be several GB
+overlays/* Original Posters/
+
+# editor state
+*.code-workspace

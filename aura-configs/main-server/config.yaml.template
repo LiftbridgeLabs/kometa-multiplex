@@ -1,0 +1,41 @@
+# AURA config TEMPLATE — ${VAR} placeholders are filled from .env by
+# render-aura-configs.py (AURA cannot read environment variables itself).
+# The rendered config.yaml is gitignored; deploy it to AURA's appdata folder.
+#
+# CRITICAL for the Kometa handshake: keep RemoveOverlayLabelOnlyOnPosterDownload
+# + Remove: ["Overlay"] — that is what tells Kometa to re-overlay new art.
+Logging:
+    Level: INFO
+MediaServer:
+    Type: Plex
+    URL: http://192.168.1.10:32400          # EDIT-ME: your MAIN server
+    ApiToken: ${AURA_PLEX_TOKEN}
+    Libraries:                               # EDIT-ME: the libraries to curate
+        - Title: Movies
+        - Title: TV Shows
+    EnableSortByEpisodeAddedDate: false      # true = recently-updated shows sort first in the UI
+    EnablePlexEventListener: true
+Mediux:
+    ApiToken: ${MEDIUX_TOKEN}
+    DownloadQuality: original
+AutoDownload:
+    Enabled: true
+    Cron: 0 0 * * *                          # midnight — before the 05:30 export
+Images:
+    CacheImages:
+        Enabled: true
+    SaveImagesLocally:
+        Enabled: false
+LabelsAndTags:
+  RemoveOverlayLabelOnlyOnPosterDownload: true
+  Applications:
+    - Application: Plex
+      Enabled: true
+      Remove:
+        - "Overlay"
+Database:
+    Type: sqlite3
+    Path: AURA.db
+Auth:
+  Enable: false
+  # Password: YOUR_ARGON2ID_HASH_HERE
