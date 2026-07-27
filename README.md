@@ -72,6 +72,23 @@ to clean up the image bloat that art churn leaves behind.
    First TV runs are long — that's the one-time cost of pushing every poster,
    season poster, and titlecard. Daily runs after that are minutes.
 
+## Forcing an ad-hoc full run
+
+`kometa-compose.yml` sets `KOMETA_RUN=false` so the container doesn't force a
+run on every restart — it just waits for `KOMETA_TIME`. Kometa's own env-var
+resolution always lets an environment variable win over the matching CLI
+flag, even from a separate `docker exec`. That means a bare
+`docker exec kometa python kometa.py --config /config/config.yml --run` will
+silently do nothing and fall through to the scheduler — no error, no output,
+even with `--trace`, which makes it look like a hang. Step 6 above dodges
+this because `--run-libraries` isn't shadowed by any `KOMETA_RUN_LIBRARIES`
+env var, but a full ad-hoc run of every library needs the env var overridden
+for that one exec call:
+
+```bash
+docker exec -e KOMETA_RUN=true kometa python kometa.py --config /config/config.yml --run
+```
+
 ## Scheduling that doesn't collide
 
 | When | What |
