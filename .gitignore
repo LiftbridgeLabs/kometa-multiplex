@@ -1,5 +1,6 @@
 # Secrets — only .env.example and *.template files are committed
 .env
+config.yml
 aura-configs/*/config.yaml
 
 # Kometa runtime state (only exists on a deployed copy)

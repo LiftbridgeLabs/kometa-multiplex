@@ -25,6 +25,15 @@ libraries:
       only_filter_missing: true
     operations: &asset_ops
       assets_for_all: true
+    collection_files: &movie_collections
+      - file: /config/collections/movies/holidays.yml
+      # --- dormant movie definitions, uncomment to enable (see README) ---
+      # - file: /config/collections/movies/awards.yml
+      # - file: /config/collections/movies/collections.yml   # IMDb Top 250 etc.
+      # - file: /config/collections/movies/decades.yml
+      # - file: /config/collections/movies/genres.yml
+      # - file: /config/collections/movies/movie_suggestions.yml
+      # - file: /config/collections/movies/studios.yml
     metadata_files: &movie_metadata
       # Manual pins for titles NOT on the main server (AURA can't curate what
       # it can't see) — listed first so the auto file below wins conflicts.
@@ -50,6 +59,10 @@ libraries:
     library_name: TV Shows
     report_path: /config/logs/main-tv.yml
     operations: *asset_ops
+    # --- dormant TV definitions, uncomment to enable (see README) ---
+    # collection_files:
+    #   - file: /config/collections/tv/networks.yml
+    #   - file: /config/collections/tv/tv_suggestions.yml
     metadata_files: &tv_metadata
       # Auto-generated nightly — show/season/titlecard art
       - file: /config/metadata/mediux-auto-tv.yml
@@ -80,6 +93,7 @@ libraries:
     report_path: /config/logs/serverb-movies.yml
     settings: *movie_settings
     operations: *asset_ops
+    collection_files: *movie_collections
     metadata_files: *movie_metadata
     overlay_files: *movie_overlays
 
@@ -88,6 +102,7 @@ libraries:
     plex: *plex_server_b
     report_path: /config/logs/serverb-tv.yml
     operations: *asset_ops
+    # collection_files: (see Main_TV above for the dormant example)
     metadata_files: *tv_metadata
     overlay_files: *tv_overlays
 

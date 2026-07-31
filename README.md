@@ -52,6 +52,8 @@ to clean up the image bloat that art churn leaves behind.
 | `.env.example` | Every secret the stack needs, in one gitignored file |
 | `overlays/movies/cam.yml`, `overlays/tv/series_status.yml` | The custom overlay definitions `config.example.yml` wires up |
 | `overlays/images/` | The art those overlays and the network-logo default need — bundled so it works out of the box, not assumed to already be on your machine |
+| `collections/movies/holidays.yml` | Seasonal collections (New Year's, Groundhog Day, Valentine's, St. Patrick's, Easter, Mother's Day, 4th of July, Halloween, Thanksgiving, Christmas) — the only collection file wired up by default |
+| `collections/movies/{awards,collections,decades,genres,movie_suggestions,studios}.yml`, `collections/tv/{networks,tv_suggestions}.yml` | Dormant collection definitions, bundled but commented out in `config.example.yml` — uncomment the ones you want per library |
 
 ## Quickstart
 
