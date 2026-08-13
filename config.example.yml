@@ -164,11 +164,19 @@ tmdb:
 # sonarr:
 #   url: http://192.168.1.10:8989
 #   token: <<sonarrkey>>
+# Public Trakt lists (trakt_list on other users' named lists, official
+# charts, trending/popular) don't need OAuth at all per Kometa's docs —
+# just client_id/client_secret. Only add the authorization: block below if
+# you need `me`/private lists, user ratings, or watched/collected charts;
+# that requires the Device Code Flow at https://utilities.kometa.wiki and
+# comes with a real cost: Trakt limits free accounts to one connected app,
+# so authorizing Kometa can disconnect Trakt from other services (e.g.
+# MDBList) using the same account. Trakt VIP lifts that limit.
 # trakt:
 #   client_id: <<traktid>>
 #   client_secret: <<traktsecret>>
-#   authorization:
-#     access_token: <<traktaccess>>
-#     token_type: Bearer
-#     refresh_token: <<traktrefresh>>
-#     scope: public
+#   # authorization:        # only needed for private/`me`/rating features
+#   #   access_token: <<traktaccess>>
+#   #   token_type: Bearer
+#   #   refresh_token: <<traktrefresh>>
+#   #   scope: public
