@@ -165,17 +165,24 @@ tmdb:
 #   url: http://192.168.1.10:8989
 #   token: <<sonarrkey>>
 # Public Trakt lists (trakt_list on other users' named lists, official
-# charts, trending/popular) don't need OAuth at all per Kometa's docs —
-# just client_id/client_secret. Only add the authorization: block below if
-# you need `me`/private lists, user ratings, or watched/collected charts;
-# that requires the Device Code Flow at https://utilities.kometa.wiki and
-# comes with a real cost: Trakt limits free accounts to one connected app,
-# so authorizing Kometa can disconnect Trakt from other services (e.g.
-# MDBList) using the same account. Trakt VIP lifts that limit.
+# charts, trending/popular) don't need OAuth at all per Kometa's docs, and
+# don't even need your own client_id/client_secret — leaving both blank
+# rides Kometa's own bundled public key. That's the right default now:
+# Trakt requires VIP just to register a new API application at all (check
+# trakt.tv/settings/apps/api — "Creating new apps requires Trakt VIP"), so
+# a free account can't create its own app to fill client_id/secret with
+# even if it wanted to.
+#
+# Only fill in client_id/client_secret + authorization: below if you have
+# Trakt VIP and need `me`/private lists, user ratings, or watched/collected
+# charts — set up via the Device Code Flow at https://utilities.kometa.wiki.
+# Note even VIP has a cost here: Trakt limits free accounts to one
+# connected app, so authorizing Kometa can disconnect Trakt from other
+# services (e.g. MDBList) using the same account; VIP lifts that limit.
 # trakt:
-#   client_id: <<traktid>>
-#   client_secret: <<traktsecret>>
-#   # authorization:        # only needed for private/`me`/rating features
+#   client_id:
+#   client_secret:
+#   # authorization:        # only needed for private/`me`/rating features (VIP)
 #   #   access_token: <<traktaccess>>
 #   #   token_type: Bearer
 #   #   refresh_token: <<traktrefresh>>
