@@ -2,7 +2,7 @@ templates:
   warning:
     plex_all: true
     filters:
-      filepath.regex: '(?i)\b<<simple_regex>>\b'
+      filepath.regex: '(?i)<<pattern>>'
     overlay:
       name: <<overlay_name>>
       file: /config/overlays/images/cam.png
@@ -10,10 +10,18 @@ templates:
       weight: <<weight>>
     allowed_library_types: movie
 
+# Pattern notes — each tag is delimited by (?<![A-Za-z0-9]) / (?![A-Za-z0-9])
+# rather than \b, so a trailing "Rip" (CAMRip, TSRip) no longer breaks the
+# match the way \b did. The closing (?!$) stops the short tags matching a
+# file extension: ".../Recording.ts" is a transport stream, not a TELESYNC.
 overlays:
   CAM:
-    variables: {simple_regex: "(HQ|HD)?CAM", weight: 4}
+    variables:
+      pattern: '(?<![A-Za-z0-9])(?:HD|HQ)?[-_. ]?CAM(?:[-_. ]?RIP)?(?![A-Za-z0-9])(?!$)'
+      weight: 4
     template: [name: warning]
   TELESYNC:
-    variables: {simple_regex: "(TS|HDTS|TELESYNC|TELECINE)", weight: 3}
+    variables:
+      pattern: '(?<![A-Za-z0-9])(?:HD)?[-_. ]?(?:TELESYNC|TELECINE|TS|TC)(?:[-_. ]?RIP)?(?![A-Za-z0-9])(?!$)'
+      weight: 3
     template: [name: warning]
