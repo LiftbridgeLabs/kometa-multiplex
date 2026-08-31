@@ -10,23 +10,30 @@ templates:
       weight: <<weight>>
     allowed_library_types: movie
 
-# Pattern notes: the tag is matched only INSIDE the [Source-Resolution]
-# bracket, never loose in the path. Every one of the 5487 files in this
-# library is Radarr-named with a {tmdb-...} id and a [...] tag, so anchoring
-# to the bracket is safe -- and it is the only way to stop a title being read
-# as a source. "Body Cam (2020) [Bluray-1080p]" and "Nanny Cam (2014)
-# [WEBDL-1080p]" are legitimate rips that a loose CAM match flags wrongly.
-# Anchoring also retires the old (?!$) extension guard: a file extension can
-# never sit inside the brackets.
+# Pattern notes: matched only inside the [{Quality Full}] bracket that
+# Radarr writes, never loose in the path. The naming format is
+#   {Movie CleanTitle} ({Release Year}) {tmdb-{TmdbId}}{edition-{Edition Tags}}
+#   [{Quality Full}][{MediaInfo AudioCodec} {MediaInfo AudioChannels}]{-Release Group}
+# so the source is always bracket-wrapped and drawn from Radarr's fixed
+# quality vocabulary -- these match that vocabulary exactly rather than
+# guessing at scene-style names.
+#
+# Anchoring is what keeps a *title* from being read as a source: "Body Cam
+# (2020) [Bluray-1080p]" and "Nanny Cam (2014) [WEBDL-1080p]" are
+# legitimate rips that a loose CAM match flags wrongly.
+#
+# The trailing [^\]]* absorbs a revision suffix -- Radarr writes
+# "[Bluray-1080p Proper]" (198 files here), so "[CAM Proper]" is possible
+# and must still match.
 overlays:
   CAM:
     variables:
-      pattern: '\[(?:HD|HQ)?-?CAM(?:-?RIP)?(?:-[^\]]*)?\]'
+      pattern: '\[CAM[^\]]*\]'
       weight: 4
     template: [name: warning]
   TELESYNC:
     variables:
-      pattern: '\[(?:HD)?-?(?:TELESYNC|TELECINE|TS|TC)(?:-?RIP)?(?:-[^\]]*)?\]'
+      pattern: '\[(?:TELESYNC|TELECINE)[^\]]*\]'
       weight: 3
     template: [name: warning]
 
