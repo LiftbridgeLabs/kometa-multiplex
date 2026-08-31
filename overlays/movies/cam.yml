@@ -25,3 +25,34 @@ overlays:
       pattern: '(?<![A-Za-z0-9])(?:HD)?[-_. ]?(?:TELESYNC|TELECINE|TS|TC)(?:[-_. ]?RIP)?(?![A-Za-z0-9])(?!$)'
       weight: 3
     template: [name: warning]
+
+  # Mislabeled uploads. A theatrical release from the last 180 days carrying
+  # AC3 *stereo* is a tell: a genuine WEB-DL of a current release ships 5.1
+  # or better, so AC3 2.0 points at a camcorder/dubbed source no matter what
+  # the filename claims.
+  #
+  # Verified 2026-08-30 against unlimited-primary (5487 movies): 107 have
+  # AC3 2.0, but only 8 are recent releases -- and all 8 are the same
+  # upload group, four of them claiming [WEBDL-1080p]/[WEBRip-1080p].
+  # The other 99 are older films where stereo is normal, which is why the
+  # release window is not optional.
+  #
+  # audio_codec is what keeps this safe: 31 recent releases have <=2
+  # channels, but the aac/eac3 ones are legitimately-stereo documentaries
+  # and concert films. Narrowing to ac3 leaves only the fakes.
+  #
+  # Weight 2 sits below TELESYNC (3) and CAM (4) in the same `warning`
+  # group, so an honest [CAM]/[TELESYNC] filename still shows its own
+  # banner and nothing double-stacks -- this only adds the ones that lie.
+  SUSPECT_AUDIO:
+    plex_all: true
+    filters:
+      release: 180
+      audio_codec: ac3
+      channels.lte: 2
+    overlay:
+      name: SUSPECT_AUDIO
+      file: /config/overlays/images/cam.png
+      group: warning
+      weight: 2
+    allowed_library_types: movie
