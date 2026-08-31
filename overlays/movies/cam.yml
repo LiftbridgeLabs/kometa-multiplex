@@ -29,11 +29,27 @@ overlays:
   CAM:
     variables:
       pattern: '\[CAM[^\]]*\]'
-      weight: 4
+      weight: 5
     template: [name: warning]
   TELESYNC:
     variables:
       pattern: '\[(?:TELESYNC|TELECINE)[^\]]*\]'
+      weight: 4
+    template: [name: warning]
+
+  # The rest of Radarr's pre-retail tier. Quality names confirmed against
+  # this Radarr instance's own /api/v3/qualitydefinition, worst first:
+  #   WORKPRINT(2) CAM(3) TELESYNC(4) TELECINE(5) REGIONAL(6) DVDSCR(7)
+  # None are present in the library today, so this changes nothing now --
+  # it is here to catch a bad grab on arrival rather than after someone
+  # sits down to watch it.
+  #
+  # REGIONAL is the loose one: it is an early *retail* disc, not a recorded
+  # screen, and Radarr ranks it above TELECINE. Drop it from this pattern
+  # if a legitimate regional release ever gets bannered.
+  SCREENER:
+    variables:
+      pattern: '\[(?:WORKPRINT|DVDSCR|REGIONAL)[^\]]*\]'
       weight: 3
     template: [name: warning]
 
