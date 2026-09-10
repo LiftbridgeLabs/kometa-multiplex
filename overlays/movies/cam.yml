@@ -29,12 +29,12 @@ overlays:
   CAM:
     variables:
       pattern: '\[CAM[^\]]*\]'
-      weight: 5
+      weight: 7
     template: [name: warning]
   TELESYNC:
     variables:
       pattern: '\[(?:TELESYNC|TELECINE)[^\]]*\]'
-      weight: 4
+      weight: 6
     template: [name: warning]
 
   # The rest of Radarr's pre-retail tier. Quality names confirmed against
@@ -50,7 +50,7 @@ overlays:
   SCREENER:
     variables:
       pattern: '\[(?:WORKPRINT|DVDSCR|REGIONAL)[^\]]*\]'
-      weight: 3
+      weight: 5
     template: [name: warning]
 
   # Mislabeled uploads. A theatrical release from the last 180 days carrying
@@ -81,7 +81,7 @@ overlays:
       name: SUSPECT_AUDIO
       file: /config/overlays/images/cam.png
       group: warning
-      weight: 2
+      weight: 3
     allowed_library_types: movie
 
   # Same idea, different tell -- for fakes that use AAC instead of AC3 and so
@@ -106,4 +106,53 @@ overlays:
       file: /config/overlays/images/cam.png
       group: warning
       weight: 1
+    allowed_library_types: movie
+
+  # Not out yet. A film whose release date has not arrived cannot have a
+  # genuine WEB-DL, whatever the filename says -- this is the one rule here
+  # that cannot produce a false positive. Exactly 3 titles in the library
+  # match today (The Weight 09-16, The Mongoose 10-29, Zip Wire 11-04) and
+  # all 3 are AAC 2.0, which is what first drew attention to them.
+  #
+  # Deliberately has no codec or container condition: the point is that the
+  # date alone settles it.
+  UNRELEASED:
+    plex_all: true
+    filters:
+      release.after: today
+    overlay:
+      name: UNRELEASED
+      file: /config/overlays/images/cam.png
+      group: warning
+      weight: 4
+    allowed_library_types: movie
+
+  # AAC stereo on a current release. Netflix, Amazon and Disney+ all ship
+  # EAC3, so AAC 2.0 on a 2026 WEB-DL is a re-encode signature rather than a
+  # real service rip. This is what catches the mkv fakes that SUSPECT_AUDIO
+  # (ac3-only) and SUSPECT_CONTAINER (mp4-only) both miss -- "Everyone Is
+  # Lying to You for Money", a Documentary released 2026-04-17, is caught by
+  # this rule and by no other.
+  #
+  # -playWEB is exempted by explicit choice: it is an established web-release
+  # group and its titles here are Netflix documentaries (Untold: Chess Mates,
+  # Untold UK: Vinnie Jones, Jamie Vardy, Kill Code). Codec alone cannot tell
+  # those apart from the fakes, so the group carries the distinction. Remove
+  # the filepath.not line to widen this back to every AAC 2.0 release.
+  #
+  # Note the eac3 stereo titles are intentionally untouched: André Is an
+  # Idiot, Euphoria: A Look Back, S4: The Bob Lazar Story, The Python Hunt
+  # and friends are legitimately-stereo documentaries.
+  SUSPECT_CODEC:
+    plex_all: true
+    filters:
+      release: 180
+      audio_codec: aac
+      channels.lte: 2
+      filepath.not: '-playWEB'
+    overlay:
+      name: SUSPECT_CODEC
+      file: /config/overlays/images/cam.png
+      group: warning
+      weight: 2
     allowed_library_types: movie
