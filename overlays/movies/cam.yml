@@ -25,6 +25,16 @@ templates:
 # The trailing [^\]]* absorbs a revision suffix -- Radarr writes
 # "[Bluray-1080p Proper]" (198 files here), so "[CAM Proper]" is possible
 # and must still match.
+# MANUAL OVERRIDE: add the Plex label "Not CAM" to any item to exempt it from
+# the four inferred rules below (UNRELEASED / SUSPECT_AUDIO / SUSPECT_CODEC /
+# SUSPECT_CONTAINER). Those rules read audio layout, container and dates, so
+# they cannot tell a genuinely stereo release from a re-encode -- "Cockroaches
+# (2026) [WEBDL-1080p][AAC 2.0]-FLIX" is a real film that simply ships stereo.
+# Labelling is the supported way to correct one: removing the banner by hand in
+# Plex does not survive the next run, because Kometa reapplies overlays each
+# time. The label is deliberately NOT honoured by CAM / TELESYNC / SCREENER --
+# those read an explicit Radarr quality tag, which is a statement of fact
+# rather than a guess.
 overlays:
   CAM:
     variables:
@@ -74,6 +84,7 @@ overlays:
   SUSPECT_AUDIO:
     plex_all: true
     filters:
+      label.not: 'Not CAM'
       release: 180
       audio_codec: ac3
       channels.lte: 2
@@ -98,6 +109,7 @@ overlays:
   SUSPECT_CONTAINER:
     plex_all: true
     filters:
+      label.not: 'Not CAM'
       release: 180
       channels.lte: 2
       filepath.regex: '(?i)\.mp4$'
@@ -119,6 +131,7 @@ overlays:
   UNRELEASED:
     plex_all: true
     filters:
+      label.not: 'Not CAM'
       release.after: today
     overlay:
       name: UNRELEASED
@@ -146,6 +159,7 @@ overlays:
   SUSPECT_CODEC:
     plex_all: true
     filters:
+      label.not: 'Not CAM'
       release: 180
       audio_codec: aac
       channels.lte: 2
