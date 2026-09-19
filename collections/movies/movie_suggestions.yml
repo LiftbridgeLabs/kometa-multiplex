@@ -18,36 +18,37 @@ templates:
 collections:
 
 #################
-##    Trakt    ##
+##    SIMKL    ##
 #################
+# Trakt lists replaced 2026-09-19 (Trakt support removed in Kometa 2.4.9).
+# simkl_trending needs no simkl: config block or account — Kometa
+# fetches it through its own Simkl service. The old couchmoney.tv
+# "Recommended" list was Trakt-only and has no equivalent, so it was dropped.
 
   Trending:
     template: {name: Suggestion, poster: 532898}
-    trakt_list:
-      - https://trakt.tv/users/jjjonesjr33/lists/trakt-trending
-    summary: "Movies Trending across the internet"
+    simkl_trending:
+      period: today
+      limit: 50
+    summary: "Movies trending on SIMKL today"
     sort_title: +++_Trending
 
   Popular:
     template: {name: Suggestion, poster: 532900}
-    trakt_list:
-      - https://trakt.tv/users/jjjonesjr33/lists/trakt-top-weekly
-    summary: "A collection of the most watched movies over the past week."
+    simkl_trending:
+      period: week
+      limit: 50
+    summary: "The most watched movies on SIMKL over the past week."
     sort_title: ++++_Popular
-
-  Recommended:
-    template: {name: Suggestion, poster: 532903}
-    trakt_list:
-      - https://trakt.tv/users/bsm-venger/lists/movie-recommendations-couchmoney-tv
-    summary: "Recommended Top Movies of the Week"
-    sort_title: ++_Recommended
 
   Newly Released:
     template: {name: Suggestion, poster: 532904}
     url_poster: https://theposterdb.com/api/assets/213599
-    trakt_list:
-      - https://trakt.tv/users/jjjonesjr33/lists/newly-released
-    summary: "A collection of newly-released movies in cinema and on streaming services."
+    # simkl_dvd would fit better, but Kometa 2.4.8 treats any item with a
+    # TVDb id as a show and SIMKL tags most movies with one, so it keeps only
+    # ~3 of 100 DVD releases. Swap back to `simkl_dvd: 50` once that's fixed.
+    tmdb_now_playing: 50
+    summary: "A collection of movies currently playing in theaters."
     sort_title: +++++_Newly Released
 
   Watchlist:

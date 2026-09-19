@@ -28,13 +28,10 @@ services:
       # (names must not contain underscores or the word PLEX — Kometa quirks)
       - KOMETA_PMSTOKEN=${PLEX_TOKEN}
       - KOMETA_TMDBKEY=${TMDB_APIKEY}
+      - KOMETA_MDBLISTKEY=${MDBLIST_APIKEY}
       # - KOMETA_DISCORDHOOK=${DISCORD_WEBHOOK}
       # - KOMETA_RADARRKEY=${RADARR_TOKEN}
       # - KOMETA_SONARRKEY=${SONARR_TOKEN}
-      # - KOMETA_TRAKTID=${TRAKT_CLIENT_ID}
-      # - KOMETA_TRAKTSECRET=${TRAKT_CLIENT_SECRET}
-      # - KOMETA_TRAKTACCESS=${TRAKT_ACCESS_TOKEN}
-      # - KOMETA_TRAKTREFRESH=${TRAKT_REFRESH_TOKEN}
 
   # Exports AURA's saved MediUX sets into Kometa metadata files daily at
   # 05:30 — right before Kometa's 06:00 run — so art curated once in AURA

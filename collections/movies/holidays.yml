@@ -22,6 +22,15 @@ templates:
 ##       Collections       ##
 #############################
 
+# Sources mirror Kometa's own seasonal defaults (defaults/movie/seasonal.yml)
+# since Trakt support is removed in Kometa 2.4.9 (2026-09). Groundhog Day has
+# no upstream equivalent, so it uses the IMDb "time-loop" keyword. Extra
+# holiday keywords (new-years-eve, easter, halloween) fill gaps the Trakt
+# lists used to cover. Mother's Day skips upstream's "motherhood, pregnancy"
+# keywords (288 matches, far too broad) for a small MDBList list instead.
+# Christmas and Mother's Day use MDBList, which needs the mdblist: block in
+# config.yml.
+
 # FYI: To set the collections on a schedule to where they don't show all year long uncomment "schedule" and and change "delete_not_scheduled:" to "true"
 
 collections:
@@ -34,9 +43,10 @@ collections:
     collection_mode: hide
     imdb_list:
       - https://www.imdb.com/list/ls066838460/
-    trakt_list:
-      - https://trakt.tv/users/threespoons/lists/new-year-s-movies
-      - https://trakt.tv/users/majeed_pk/lists/100-best-new-year-s-eve-movies-of-all-time
+    imdb_search:
+      type: movie
+      keyword.any: new-years-eve
+      limit: 0
     summary: This collection revolves around the plot involving New Year's Eve.
   Groundhog Day Movies:
     template: {name: Holiday, holiday: "Groundhog Day", poster: https://theposterdb.com/api/assets/15392}
@@ -45,8 +55,10 @@ collections:
     #schedule: range(01/28-02/02)
     smart_label: critic_rating.desc
     collection_mode: hide
-    trakt_list:
-      - https://trakt.tv/users/iceception/lists/groundhog-day
+    imdb_search:
+      type: movie
+      keyword.any: time-loop
+      limit: 500
     summary: This collection revolves around the plot involving Groundhog Day.
   Valentine's Day Movies:
     template: {name: Holiday, holiday: "Valentine's Day", poster: https://theposterdb.com/api/assets/219483}
@@ -59,8 +71,7 @@ collections:
       - https://www.imdb.com/list/ls000094398/
       - https://www.imdb.com/list/ls057783436/
       - https://www.imdb.com/list/ls064427905/
-    trakt_list:
-      - https://trakt.tv/users/pterisaur/lists/valentine-s-day?
+      - https://www.imdb.com/list/ls032692441/
     summary: This collection revolves around the plot involving Valentine's Day.
   St. Patrick's Day Movies:
     template: {name: Holiday, holiday: "St. Patrick's Day", poster: https://theposterdb.com/api/assets/219480}
@@ -71,8 +82,7 @@ collections:
     collection_mode: hide
     imdb_list:
       - https://www.imdb.com/list/ls063934595/
-    trakt_list:
-      - https://trakt.tv/users/pterisaur/lists/st-patrick-s-day?
+      - https://www.imdb.com/list/ls067580975/
     summary: This collection revolves around the plot involving St. Patrick's Day.
   Easter Movies:
     template: {name: Holiday, holiday: "Easter", poster: https://theposterdb.com/api/assets/60970}
@@ -84,8 +94,10 @@ collections:
     imdb_list:
       - https://www.imdb.com/list/ls062665509/
       - https://www.imdb.com/list/ls051733651/
-    trakt_list:
-      - https://trakt.tv/users/galacticboy/lists/easter-movies?sort=released,asc
+    imdb_search:
+      type: movie
+      keyword.any: easter
+      limit: 0
     summary: This collection revolves around the plot involving Easter.
   Mother's Day Movies:
     template: {name: Holiday, holiday: "Mother's Day", poster: https://theposterdb.com/api/assets/107358}
@@ -94,8 +106,12 @@ collections:
     #schedule: range(05/01-05/14)
     smart_label: critic_rating.desc
     collection_mode: hide
-    trakt_list:
-      - https://trakt.tv/users/terminalerrr/lists/mother-s-day-movies
+    mdblist_list:
+      - https://mdblist.com/lists/dlochgo/mothers-day-movies
+    imdb_search:
+      type: movie
+      keyword.any: mother's-day
+      limit: 0
     summary: This collection revolves around the plot involving Mother's Day.
   4th of July Movies:
     template: {name: Holiday, holiday: "4th of July", poster: https://theposterdb.com/api/assets/543535}
@@ -105,11 +121,10 @@ collections:
     smart_label: critic_rating.desc
     collection_mode: hide
     imdb_list:
-      - https://www.imdb.com/list/ls552600367/
-    trakt_list:
-      - https://trakt.tv/users/hitsquid/lists/4th-of-july
-      - https://trakt.tv/users/mrjohnnycake/lists/4th-of-july
-      - https://trakt.tv/users/dunpealhunter/lists/american-propaganda-patriotic-movies
+      - https://www.imdb.com/list/ls561449172/
+      - https://www.imdb.com/list/ls541213215/
+      - https://www.imdb.com/list/ls068664510/
+      - https://www.imdb.com/list/ls080925875/
     summary: This collection revolves around around plots involving Independence Day.
   Halloween Movies:
     template: {name: Holiday, holiday: "Halloween!", poster: https://theposterdb.com/api/assets/532895}
@@ -118,8 +133,27 @@ collections:
     #schedule: range(10/01-10/31)
     smart_label: critic_rating.desc
     collection_mode: hide
-    trakt_list:
-      - https://trakt.tv/users/rafajy/lists/tv-movies-this-is-halloween-halloween-halloween-copy
+    imdb_list:
+      - https://www.imdb.com/list/ls546214737/
+      - https://www.imdb.com/list/ls023118929/
+      - https://www.imdb.com/list/ls000099714/
+    imdb_search:
+      type: movie
+      keyword.any: halloween
+      limit: 0
+    tmdb_collection:
+      - 185103    # Hotel Transylvania
+      - 11716     # Addams Family
+      - 750822    # Addams Family Animated
+      - 313086    # Conjuring
+      - 91361     # Halloween Collection
+      - 8581      # A Nightmare on Elm Street Collection
+      - 1733      # The Mummy Collection
+      - 8091      # Alien Collection
+      - 2980      # Ghostbusters
+      - 751156    # Hocus Pocus
+    tmdb_movie:
+      - 23437     # A Nightmare on Elm Street (2010)
     summary: This collection revolves around the plot involving Halloween.
   Thanksgiving Movies:
     template: {name: Holiday, holiday: "Thanksgiving", poster: https://theposterdb.com/api/assets/112252}
@@ -130,11 +164,10 @@ collections:
     collection_mode: hide
     imdb_list:
       - https://www.imdb.com/list/ls000835734/
-      - https://www.imdb.com/list/ls091597850/
-    trakt_list:
-      - https://trakt.tv/users/francis-drake/lists/thanksgiving?
-      - https://trakt.tv/users/galacticboy/lists/thanksgiving-movies?
-      - https://trakt.tv/users/hdlists/lists/thanksgiving-movies?
+    imdb_search:
+      type: movie
+      keyword.any: thanksgiving
+      limit: 500
     summary: This collection revolves around the plot involving Thanksgiving.
   Christmas:
     template: {name: Holiday, holiday: "Christmas", poster: https://theposterdb.com/api/assets/48897}
@@ -143,6 +176,6 @@ collections:
     #schedule: range(12/01-12/31)
     smart_label: critic_rating.desc
     collection_mode: hide
-    trakt_list:
-      - https://trakt.tv/users/jjjonesjr33/lists/christmas-static-list
+    mdblist_list:
+      - https://mdblist.com/lists/k0meta/christmas-extravaganza
     summary: This collection revolves around the plot involving Christmas.

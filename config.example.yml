@@ -153,6 +153,14 @@ tmdb:
   cache_expiration: 60
   language: en
 
+# MDBList (free key at mdblist.com/preferences) — holidays.yml's Christmas
+# collection uses Kometa's own k0meta/christmas-extravaganza list. Kometa
+# removed Trakt support in 2.4.9, so the holiday lists now come from the
+# same IMDb/TMDb/MDBList sources as Kometa's seasonal defaults.
+mdblist:
+  apikey: <<mdblistkey>>
+  cache_expiration: 60
+
 # Optional — uncomment what you use (and its KOMETA_* line in the compose):
 # webhooks:
 #   error: <<discordhook>>
@@ -164,26 +172,3 @@ tmdb:
 # sonarr:
 #   url: http://192.168.1.10:8989
 #   token: <<sonarrkey>>
-# Public Trakt lists (trakt_list on other users' named lists, official
-# charts, trending/popular) don't need OAuth at all per Kometa's docs, and
-# don't even need your own client_id/client_secret — leaving both blank
-# rides Kometa's own bundled public key. That's the right default now:
-# Trakt requires VIP just to register a new API application at all (check
-# trakt.tv/settings/apps/api — "Creating new apps requires Trakt VIP"), so
-# a free account can't create its own app to fill client_id/secret with
-# even if it wanted to.
-#
-# Only fill in client_id/client_secret + authorization: below if you have
-# Trakt VIP and need `me`/private lists, user ratings, or watched/collected
-# charts — set up via the Device Code Flow at https://utilities.kometa.wiki.
-# Note even VIP has a cost here: Trakt limits free accounts to one
-# connected app, so authorizing Kometa can disconnect Trakt from other
-# services (e.g. MDBList) using the same account; VIP lifts that limit.
-# trakt:
-#   client_id:
-#   client_secret:
-#   # authorization:        # only needed for private/`me`/rating features (VIP)
-#   #   access_token: <<traktaccess>>
-#   #   token_type: Bearer
-#   #   refresh_token: <<traktrefresh>>
-#   #   scope: public
